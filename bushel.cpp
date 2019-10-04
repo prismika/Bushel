@@ -20,6 +20,9 @@ int execute_special(const Command*);
 
 string pwd = "";
 Parser parser;
+string txtblue = "\e[0;36m";
+string txtgreen = "\e[0;32m";
+string txtreg = "\e[0;37m";
 
 /*Main method. Bootstrap for the entire program.*/
 int main(int argc, char *argv[]){
@@ -28,7 +31,7 @@ int main(int argc, char *argv[]){
 	//Main prompt loop
 	while(true){
 		pwd = getenv("PWD");
-		string prompt = "bushel:" + pwd + "$ ";
+		string prompt = txtgreen + "<bushel>" + txtreg + pwd + txtreg + "$ ";
 		cout << prompt;
 		string userInput;
 		getline(cin, userInput);
