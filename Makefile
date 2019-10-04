@@ -5,6 +5,7 @@ RM = rm
 TAR = tar cvfz
 
 CFLAGS = -Wall -ggdb3
+CPPFLAGS = -Wall -ggdb3
 
 BIN = bushel
 OBJS = parser.o
@@ -15,13 +16,13 @@ all: $(BIN)
 # 	gcc -Wall -ggdb3 dijkstrasCurse.c mapElements.o display.o pathFinder.o heap.o -o dijkstrasCurse -lm
 $(BIN): $(OBJS) bushel.o
 	@$(ECHO) Linking $@
-	@$(CXX) $^ -o $@ #-lncurses
+	@g++ $^ -o $@ -Wall -ggdb3 #-lncurses
 
 -include $(OBJS:.o=.d)
 
-%.o: %.cpp %.h
+%.cpp.o: %.cpp %.h
 	@$(ECHO) Compiling $<
-	@$(CXX) $(CFLAGS) -MMD -MF $*.d -c $<
+	@g++ -Wall -ggdb3 -MMD -MF $*.d -c $<
 
 #Clean up!
 clean:

@@ -17,7 +17,6 @@ using namespace std;
 
 int execute(const Command*);
 int execute_special(const Command*);
-string *find_path(const string*);
 
 string pwd = "";
 Parser parser;
@@ -40,6 +39,7 @@ int main(int argc, char *argv[]){
 		while(parser.has_next_command()){
 			Command *current_command;
 			current_command = parser.next_command();
+			cout << "Executing" << endl;
 			execute(current_command);
 		}
 	}
@@ -48,29 +48,31 @@ int main(int argc, char *argv[]){
 }
 
 int execute(const Command *command){
-	int ret;
-	if(ret = execute_special(command)){
-		return ret;
+	if(execute_special(command)){
+		return 0;
 	}
-	string *path = find_path(&command->name);
 	if(!fork()){//child
 		//put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());
 		char *exec_args[command->args.size()+2];
-		// cout << command->args.size()<<endl;
+		cout << command->args.size() <<endl;
 		exec_args[0]=exec_name;
-		int i;
+		size_t i;
 		for(i = 1; i < command->args.size()+1; i++){
-			exec_args[i]=(char*)malloc(command->args[i].length()+1);
-			strcpy(exec_args[i],command->args[i].c_str());
+			cout << "Argument " << i << " is of length " << command->args[i-1].length() << endl;
+			cout << "Argument is " << command->args[i-1] << endl;
+			exec_args[i]=(char*)malloc(command->args[i-1].length()+1);
+			cout << command->args[i-1].length() << endl;
+			// strcpy(exec_args[i],command->args[i].c_str());
+			cout << exec_args[i] << endl;
 		}
 		exec_args[i]=NULL;
-		int j;
-		for(j=0;j<i; j++){
-			cout<<exec_args[j]<<endl;
-		}
-		execvp(exec_args[0],exec_args);
+		// execvp(exec_args[0],exec_args);
+		char *tmp[] = {(char*)"ls",(char*)"-lah",NULL};
+		execvp(tmp[0],tmp);
+		cout << "Error executing command" << endl;
+		exit(0);
 	}else{//parent
 		if(!command->background){
 			wait(NULL);
@@ -86,10 +88,4 @@ int execute_special(const Command *command){
 		...
 	}...*/
 	return 0;
-}
-
-string bin = "/bin/";
-
-string *find_path(const string *file){
-	return &bin;
 }
