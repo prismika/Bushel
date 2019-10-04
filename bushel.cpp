@@ -7,15 +7,17 @@ Brantley Vose
 */
 // #include <cstdlib>
 // #include <cstdio>
-// #include <unistd.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #include <iostream>
+#include <cstring>
 #include "parser.h"
 
 using namespace std;
 
-int execute(Command*);
-int execute_special(Command*);
+int execute(const Command*);
+int execute_special(const Command*);
+string *find_path(const string*);
 
 string pwd = "";
 Parser parser;
@@ -45,40 +47,49 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-int execute(Command *command){
-	cout << "Executing " + command->name << endl;
-	cout << "Arguments:" << endl;
-	for(int i = 0; i < command->args.size(); i++){
-		cout << command->args[i] << endl;
-	}
-	/*int ret;
+int execute(const Command *command){
+	int ret;
 	if(ret = execute_special(command)){
 		return ret;
 	}
-	string command_name = command->get_name();
-	string path = get_env_or_whatever("PATH");
-	//Split at semicolons into vector<string> paths
-	for(int i = 0; i < paths.size(); i++){
-		//Look in paths[i] for a command matching command_name
-		if(!fork()){
-			//put in environment parent
-			execlp("paths[i]" + command_name, command_name, NULL);
-			//This but with arguments that work
-			exit(0);
-		}else{//parent
-			if(!command.background()){
-				wait(NULL);
-			}
+	string *path = find_path(&command->name);
+	if(!fork()){//child
+		//put in environment parent
+		char *exec_name = (char*)malloc(command->name.length()+1);
+		strcpy(exec_name,command->name.c_str());
+		char *exec_args[command->args.size()+2];
+		// cout << command->args.size()<<endl;
+		exec_args[0]=exec_name;
+		int i;
+		for(i = 1; i < command->args.size()+1; i++){
+			exec_args[i]=(char*)malloc(command->args[i].length()+1);
+			strcpy(exec_args[i],command->args[i].c_str());
 		}
-	}*/
+		exec_args[i]=NULL;
+		int j;
+		for(j=0;j<i; j++){
+			cout<<exec_args[j]<<endl;
+		}
+		execvp(exec_args[0],exec_args);
+	}else{//parent
+		if(!command->background){
+			wait(NULL);
+		}
+	}
 	return 0;
 }
 
 
-int execute_special(Command *command){
+int execute_special(const Command *command){
 	/*string command_name = command->name();
 	if(command_name.compare("cd")){
 		...
 	}...*/
 	return 0;
+}
+
+string bin = "/bin/";
+
+string *find_path(const string *file){
+	return &bin;
 }
