@@ -7,7 +7,7 @@ TAR = tar cvfz
 CFLAGS = -Wall -ggdb3
 
 BIN = bushel
-OBJS = environment.o
+OBJS = parser.o
 
 all: $(BIN)
 

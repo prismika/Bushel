@@ -1,4 +1,6 @@
-/*This is the main executable. It handles interpretation
+/*
+Bushel: The Barely Usable SHELl
+This is the main executable. It handles interpretation
 of commands and the coordination of the various other objects.
 Brantley Vose
 2019/10/01
@@ -8,11 +10,15 @@ Brantley Vose
 // #include <unistd.h>
 #include <sys/wait.h>
 #include <iostream>
-#include "environment.h"
+#include "parser.h"
 
 using namespace std;
 
+int execute(Command*);
+int execute_special(Command*);
+
 string pwd = "";
+Parser parser;
 
 /*Main method. Bootstrap for the entire program.*/
 int main(int argc, char *argv[]){
@@ -21,26 +27,26 @@ int main(int argc, char *argv[]){
 	//Main prompt loop
 	while(true){
 		pwd = getenv("PWD");
-		string prompt = "Bushel:" + pwd + "$ ";
+		string prompt = "bushel:" + pwd + "$ ";
 		cout << prompt;
 		string userInput;
 		getline(cin, userInput);
 		if(!userInput.compare("quit")){
 			exit(0);
 		}
-		//parser.parse(&userInput);
-		//while(parser.has_next_command()){
-			//Command *current_command;
-			//current_command = parser.next_command();
-			//execute(current_command);
-		//}
+		parser.parse(&userInput);
+		while(parser.has_next_command()){
+			Command *current_command;
+			current_command = parser.next_command();
+			execute(current_command);
+		}
 	}
 
 	return 0;
 }
 
-/*int execute(Command *command){
-	int ret;
+int execute(Command *command){
+	/*int ret;
 	if(ret = execute_special(command)){
 		return ret;
 	}
@@ -59,15 +65,15 @@ int main(int argc, char *argv[]){
 				wait(NULL);
 			}
 		}
-	}
+	}*/
 	return 0;
-}*/
+}
 
-/*
+
 int execute_special(Command *command){
-	string command_name = command->name();
+	/*string command_name = command->name();
 	if(command_name.compare("cd")){
 		...
-	}...
+	}...*/
+	return 0;
 }
-*/
