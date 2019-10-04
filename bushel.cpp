@@ -20,8 +20,8 @@ int execute_special(const Command*);
 
 string pwd = "";
 Parser parser;
-string txtblue = "\e[0;36m";
-string txtgreen = "\e[0;32m";
+string txtblue = "\e[01;34m";
+string txtgreen = "\e[01;32m";
 string txtreg = "\e[0;37m";
 
 /*Main method. Bootstrap for the entire program.*/
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 	//Main prompt loop
 	while(true){
 		pwd = getenv("PWD");
-		string prompt = txtgreen + "<bushel>" + txtreg + pwd + txtreg + "$ ";
+		string prompt = txtgreen + "[bushel]" + txtblue + "<" + pwd + ">" + txtreg + "$ ";
 		cout << prompt;
 		string userInput;
 		getline(cin, userInput);
@@ -66,7 +66,7 @@ int execute(const Command *command){
 		}
 		exec_args[i]=NULL;
 		execvp(exec_args[0],exec_args);
-		cout << "Error executing command" << endl;
+		cout << "Command not found: " << exec_args[0] << endl;
 		exit(0);
 	}else{//parent
 		if(!command->background){
