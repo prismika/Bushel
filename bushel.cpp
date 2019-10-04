@@ -46,6 +46,11 @@ int main(int argc, char *argv[]){
 }
 
 int execute(Command *command){
+	cout << "Executing " + command->name << endl;
+	cout << "Arguments:" << endl;
+	for(int i = 0; i < command->args.size(); i++){
+		cout << command->args[i] << endl;
+	}
 	/*int ret;
 	if(ret = execute_special(command)){
 		return ret;
