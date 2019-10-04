@@ -39,7 +39,6 @@ int main(int argc, char *argv[]){
 		while(parser.has_next_command()){
 			Command *current_command;
 			current_command = parser.next_command();
-			cout << "Executing" << endl;
 			execute(current_command);
 		}
 	}
@@ -56,21 +55,14 @@ int execute(const Command *command){
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());
 		char *exec_args[command->args.size()+2];
-		cout << command->args.size() <<endl;
 		exec_args[0]=exec_name;
 		size_t i;
 		for(i = 1; i < command->args.size()+1; i++){
-			cout << "Argument " << i << " is of length " << command->args[i-1].length() << endl;
-			cout << "Argument is " << command->args[i-1] << endl;
 			exec_args[i]=(char*)malloc(command->args[i-1].length()+1);
-			cout << command->args[i-1].length() << endl;
-			// strcpy(exec_args[i],command->args[i].c_str());
-			cout << exec_args[i] << endl;
+			strcpy(exec_args[i],command->args[i-1].c_str());
 		}
 		exec_args[i]=NULL;
-		// execvp(exec_args[0],exec_args);
-		char *tmp[] = {(char*)"ls",(char*)"-lah",NULL};
-		execvp(tmp[0],tmp);
+		execvp(exec_args[0],exec_args);
 		cout << "Error executing command" << endl;
 		exit(0);
 	}else{//parent
