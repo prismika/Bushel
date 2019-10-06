@@ -5,8 +5,6 @@ of commands and the coordination of the various other objects.
 Brantley Vose
 2019/10/01
 */
-// #include <cstdlib>
-// #include <cstdio>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <iostream>
@@ -35,9 +33,6 @@ int main(int argc, char *argv[]){
 		cout << prompt;
 		string userInput;
 		getline(cin, userInput);
-		if(!userInput.compare("quit")){
-			exit(0);
-		}
 		parser.parse(&userInput);
 		while(parser.has_next_command()){
 			Command *current_command;
@@ -50,7 +45,7 @@ int main(int argc, char *argv[]){
 }
 
 int execute(const Command *command){
-	if(execute_special(command)){
+	if(!execute_special(command)){
 		return 0;
 	}
 	if(!fork()){//child
@@ -76,11 +71,15 @@ int execute(const Command *command){
 	return 0;
 }
 
-
+/*Checks if command needs special execution procedure and executes it.
+Returns 0 if command was executed. Returns -1 otherwise.*/
 int execute_special(const Command *command){
 	/*string command_name = command->name();
 	if(command_name.compare("cd")){
 		...
 	}...*/
-	return 0;
+	if(!command->name.compare("quit") || !command->name.compare("exit")){
+		exit(0);
+	}
+	return -1;
 }
