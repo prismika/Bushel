@@ -80,6 +80,9 @@ int execute_special(const Command *command){
 	}...*/
 	if(!command->name.compare("quit") || !command->name.compare("exit")){
 		exit(0);
+	}else if(!command->name.compare("cd")){
+		cout << "I can't change directories yet :(" << endl;
+		return 0;
 	}
 	return -1;
 }
