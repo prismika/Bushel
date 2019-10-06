@@ -8,15 +8,13 @@ CFLAGS = -Wall -ggdb3
 CPPFLAGS = -Wall -ggdb3
 
 BIN = bushel
-OBJS = parser.o
+OBJS = parser.o filemanager.o
 
 all: $(BIN)
 
-# dijkstrasCurse: dijkstrasCurse.c mapElements dij display heap
-# 	gcc -Wall -ggdb3 dijkstrasCurse.c mapElements.o display.o pathFinder.o heap.o -o dijkstrasCurse -lm
 $(BIN): $(OBJS) bushel.o
 	@$(ECHO) Linking $@
-	@g++ $^ -o $@ -Wall -ggdb3 #-lncurses
+	@g++ $^ -o $@ -Wall -ggdb3
 
 -include $(OBJS:.o=.d)
 
