@@ -22,7 +22,7 @@ string txtblue = "\e[01;34m";
 string txtgreen = "\e[01;32m";
 string txtreg = "\e[0;37m";
 
-/*Main method. Bootstrap for the entire program.*/
+/*Main method. Bootstrap for the entire shell.*/
 int main(int argc, char *argv[]){
 	//Setup
 	//put in environment: "shell","path/to/shell/bushel"
@@ -44,10 +44,27 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
+int fd_pipe_from_child[2];
 int execute(const Command *command){
+	//Execute any "special" commands
 	if(!execute_special(command)){
 		return 0;
 	}
+
+	//Do necessary plumbing
+	// if(!command->infile.empty()){
+	// }
+	if(command->pipe){
+		pipe(fd_pipe_from_child);
+		if(!fork()){//"more" child
+			dup2(fd_pipe_from_child[0],0);
+			char *exec_more[] = {(char*)"more",NULL};
+			execvp(exec_more[0],exec_more);
+			cout << "Failed to open \"more\"." << endl;
+			exit(0);
+		}
+	}
+
 	if(!fork()){//child
 		//put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
@@ -60,6 +77,10 @@ int execute(const Command *command){
 			strcpy(exec_args[i],command->args[i-1].c_str());
 		}
 		exec_args[i]=NULL;
+		if(command->pipe){
+			//Replace stdout of child with write end of pipe
+			dup2(fd_pipe_from_child[1],1);
+		}
 		execvp(exec_args[0],exec_args);
 		cout << "Command not found: " << exec_args[0] << endl;
 		exit(0);

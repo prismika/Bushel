@@ -16,6 +16,9 @@ int Parser::parse(string *str){
 		new_command-> args.push_back(token);
 	}
 	new_command->background = false;
+	new_command->pipe = false;
+	new_command->infile = "";
+	new_command->outfile = "";
 	q.push(new_command);
 	return 0;
 }
