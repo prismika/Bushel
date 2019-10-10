@@ -58,6 +58,7 @@ int execute(const Command *command){
 		more_pid=fork();
 		if(more_pid==0){//"more" child
 			dup2(fd_pipe_from_child[0],0);
+			close(fd_pipe_from_child[1]);
 			char *exec_more[] = {(char*)"more",NULL};
 			execvp(exec_more[0],exec_more);
 			cout << "Failed to open \"more\"." << endl;
@@ -79,9 +80,10 @@ int execute(const Command *command){
 			strcpy(exec_args[i],command->args[i-1].c_str());
 		}
 		exec_args[i]=NULL;
-		if(command->pipe){//Fancy pipe things. Ignore.
+		if(command->pipe){
 			//Replace stdout of child with write end of pipe
 			dup2(fd_pipe_from_child[1],1);
+			close(fd_pipe_from_child[0]);
 		}
 		execvp(exec_args[0],exec_args);
 		cout << "Command not found: " << exec_args[0] << endl;
@@ -93,6 +95,8 @@ int execute(const Command *command){
 			cout << "Child dead" << endl;
 		}
 		if(command->pipe){
+			close(fd_pipe_from_child[1]);
+			close(fd_pipe_from_child[0]);
 			cout << "Waiting for more to die" << endl;
 			waitpid(more_pid,NULL,0);
 			cout << "More dead" << endl;
