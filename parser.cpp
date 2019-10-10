@@ -18,7 +18,12 @@ int Parser::parse(string *str){
 		str_stream >> token;
 		if(token.empty()) break;
 		if(token.find("|")!=string::npos){
-			new_command->pipe=true;
+			string next_token;
+			str_stream >> next_token;
+			if(token.find("more")!=string::npos
+				|| !next_token.compare("more")){
+				new_command->pipe=true;
+			}
 			continue;
 		}
 		new_command-> args.push_back(token);
