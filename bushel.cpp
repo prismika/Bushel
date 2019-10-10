@@ -85,21 +85,22 @@ int execute(const Command *command){
 			dup2(fd_pipe_from_child[1],1);
 			close(fd_pipe_from_child[0]);
 		}
+		cout << exec_args[0] << endl;
 		execvp(exec_args[0],exec_args);
 		cout << "Command not found: " << exec_args[0] << endl;
 		exit(0);
 	}else{//parent
 		if(!command->background){//command->background is a flag that the parser sets
-			cout << "Waiting for child to die." << endl;
+			// cout << "Waiting for child to die." << endl;
 			waitpid(child_pid,NULL,0);
-			cout << "Child dead" << endl;
+			// cout << "Child dead" << endl;
 		}
 		if(command->pipe){
 			close(fd_pipe_from_child[1]);
 			close(fd_pipe_from_child[0]);
-			cout << "Waiting for more to die" << endl;
+			// cout << "Waiting for more to die" << endl;
 			waitpid(more_pid,NULL,0);
-			cout << "More dead" << endl;
+			// cout << "More dead" << endl;
 		}
 
 		
