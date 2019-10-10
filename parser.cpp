@@ -7,18 +7,22 @@ using namespace std;
 
 int Parser::parse(string *str){
 	Command *new_command = new Command();
+	new_command->background = false;
+	new_command->pipe = false;
+	new_command->infile = "";
+	new_command->outfile = "";
 	stringstream str_stream(*str);
 	str_stream >> new_command->name;
 	while(true){
 		string token;
 		str_stream >> token;
 		if(token.empty()) break;
+		if(token.find("|")!=string::npos){
+			new_command->pipe=true;
+			continue;
+		}
 		new_command-> args.push_back(token);
 	}
-	new_command->background = false;
-	new_command->pipe = false;
-	new_command->infile = "";
-	new_command->outfile = "";
 	q.push(new_command);
 	return 0;
 }

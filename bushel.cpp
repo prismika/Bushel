@@ -52,11 +52,11 @@ int execute(const Command *command){
 	}
 
 	//Do necessary plumbing
-	// if(!command->infile.empty()){
-	// }
+	pid_t more_pid;
 	if(command->pipe){
 		pipe(fd_pipe_from_child);
-		if(!fork()){//"more" child
+		more_pid=fork();
+		if(more_pid==0){//"more" child
 			dup2(fd_pipe_from_child[0],0);
 			char *exec_more[] = {(char*)"more",NULL};
 			execvp(exec_more[0],exec_more);
@@ -65,7 +65,9 @@ int execute(const Command *command){
 		}
 	}
 
-	if(!fork()){//child
+	//Create child that will execute command
+	pid_t child_pid = fork();
+	if(child_pid == 0){//child
 		//put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());
@@ -77,7 +79,7 @@ int execute(const Command *command){
 			strcpy(exec_args[i],command->args[i-1].c_str());
 		}
 		exec_args[i]=NULL;
-		if(command->pipe){
+		if(command->pipe){//Fancy pipe things. Ignore.
 			//Replace stdout of child with write end of pipe
 			dup2(fd_pipe_from_child[1],1);
 		}
@@ -85,9 +87,18 @@ int execute(const Command *command){
 		cout << "Command not found: " << exec_args[0] << endl;
 		exit(0);
 	}else{//parent
-		if(!command->background){
-			wait(NULL);
+		if(!command->background){//command->background is a flag that the parser sets
+			cout << "Waiting for child to die." << endl;
+			waitpid(child_pid,NULL,0);
+			cout << "Child dead" << endl;
 		}
+		if(command->pipe){
+			cout << "Waiting for more to die" << endl;
+			waitpid(more_pid,NULL,0);
+			cout << "More dead" << endl;
+		}
+
+		
 	}
 	return 0;
 }
