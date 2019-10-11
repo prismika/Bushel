@@ -175,6 +175,27 @@ int execute(const Command *command){
 	return 0;
 }
 
+string help_message = "Welcome to Bushel - the Barely Usable SHELl.\n"
+"\n"
+"Bushel supports output redirection:\n"
+"\tcommand [arguments] < input_file > output_file\n"
+"To append to the output file instead of replacing\n"
+"it, use '>>' instead of '>'.\n"
+"\n"
+"Bushel supports piping to \"more\" like so:\n"
+"\tcommand [arguments] | more\n"
+"\n"
+"Instead of opening an interactive prompt, Bushel\n"
+"can read instructions from a file:\n"
+"./bushel batch_file\n"
+"\n"
+"Multiple commands can be fed into Bushel at once\n"
+"by separating them with semicolons:\n"
+"\tcommand1 ; command2 ; command3\n"
+"These commands will run sequentially.\n"
+"\n"
+"Thank you for using Bushel!\n";
+
 /*Checks if command needs special execution procedure and executes it.
 Returns 0 if command was executed. Returns -1 otherwise.*/
 int execute_special(const Command *command){
@@ -221,6 +242,8 @@ int execute_special(const Command *command){
 		strcpy(to_put_in_env_char, to_put_in_env.c_str());
 		putenv(to_put_in_env_char);
 		return 0;
+	}else if(!command->name.compare("help")){
+		cout << help_message << endl;
 	}
 	return -1;
 }
