@@ -85,7 +85,7 @@ int execute(const Command *command){
 			dup2(fd_pipe_from_child[1],1);
 			close(fd_pipe_from_child[0]);
 		}
-		cout << exec_args[0] << endl;
+		// cout << exec_args[0] << endl;
 		execvp(exec_args[0],exec_args);
 		cout << "Command not found: " << exec_args[0] << endl;
 		exit(0);
@@ -102,8 +102,6 @@ int execute(const Command *command){
 			waitpid(more_pid,NULL,0);
 			// cout << "More dead" << endl;
 		}
-
-		
 	}
 	return 0;
 }
