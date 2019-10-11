@@ -1,3 +1,10 @@
+/*
+Parser.cpp
+This defindes the functions of the Parser object, which
+takes user input strings and processes them into Command
+structs. The structs are placed in a queue for the main
+executable to interpret.
+*/
 #include "parser.h"
 #include <sstream>
 #include <cstdlib>
@@ -7,7 +14,7 @@ using namespace std;
 
 // static string get_next_token(string *str, size_t *progress);
 
-void pad_symbols(string *str){
+static void pad_symbols(string *str){
 	size_t symbol_position = 0;
 	while(symbol_position <= str->length()){
 		symbol_position = str->find_first_of("|;", symbol_position);
@@ -91,3 +98,6 @@ Command *Parser::next_command(void){
 	q.pop();
 	return to_return;
 }
+
+
+

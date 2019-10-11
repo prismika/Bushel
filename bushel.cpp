@@ -9,6 +9,7 @@ Brantley Vose
 #include <sys/wait.h>
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "parser.h"
 
 using namespace std;
@@ -26,21 +27,37 @@ string txtreg = "\e[0;37m";
 int main(int argc, char *argv[]){
 	//Setup
 	//put in environment: "shell","path/to/shell/bushel"
-	//Main prompt loop
-	while(true){
-		pwd = getenv("PWD");
-		string prompt = txtgreen + "[bushel]" + txtblue + "<" + pwd + ">" + txtreg + "$ ";
-		cout << prompt;
-		string userInput;
-		getline(cin, userInput);
-		parser.parse(&userInput);
+	//Check for file specified in argument
+	if(argc==2){
+		cout << "Two arguments" << endl;
+		ifstream batch_file(argv[1]);
+		if(batch_file.fail()){
+			cout << "Error: File not found: " << argv[1] << endl;
+			return -1;
+		}
+		cout << "Executing from batch file: " << argv[1] << endl;
+		// parser.parse_file(&batch_file);
 		while(parser.has_next_command()){
 			Command *current_command;
 			current_command = parser.next_command();
 			execute(current_command);
 		}
+	}else{
+		//Main prompt loop
+		while(true){
+			pwd = getenv("PWD");
+			string prompt = txtgreen + "[bushel]" + txtblue + "<" + pwd + ">" + txtreg + "$ ";
+			cout << prompt;
+			string userInput;
+			getline(cin, userInput);
+			parser.parse(&userInput);
+			while(parser.has_next_command()){
+				Command *current_command;
+				current_command = parser.next_command();
+				execute(current_command);
+			}
+		}
 	}
-
 	return 0;
 }
 
