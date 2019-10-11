@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <fstream>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ private:
 	queue<Command*> q;
 public:
 	int parse(string*);
+	int parse_file(ifstream*);
 	bool has_next_command(void);
 	Command *next_command(void);
 };

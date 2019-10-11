@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
 			return -1;
 		}
 		cout << "Executing from batch file: " << argv[1] << endl;
-		// parser.parse_file(&batch_file);
+		parser.parse_file(&batch_file);
 		while(parser.has_next_command()){
 			Command *current_command;
 			current_command = parser.next_command();

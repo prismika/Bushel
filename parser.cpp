@@ -65,6 +65,16 @@ int Parser::parse(string *str){
 	return 0;
 }
 
+int Parser::parse_file(ifstream *file_stream){
+	cout << "Parsing file..." << endl;
+	while(!file_stream->eof()){
+		string cur_line;
+		getline(*file_stream, cur_line);
+		parse(&cur_line);
+	}
+	return 0;
+}
+
 // static string get_next_token(string *str, size_t *progress){
 // 	//If we've progressed to the end of the string, we're done.
 // 	if(str->length() <= *progress) return "";
