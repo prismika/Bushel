@@ -102,11 +102,25 @@ int execute(const Command *command){
 			fd_out = open(outfile_path.c_str(),write_flags,S_IRUSR|S_IWUSR);
 			if(fd_out < 0){
 				cout << "Error: failed to open output file: " << command->outfile;
-			}else{//If successful, replace stdout with the new file descriptor
+			}else{//If successful, replace stdout and stderr with the new file descriptor
 				dup2(fd_out, 1);
 				dup2(fd_out, 2);
 			}
 		}
+
+		int fd_in;
+		if(!command->infile.empty()){
+			string infile_path = getenv("PWD");
+			infile_path += "/";
+			infile_path += command->infile;
+			fd_in = open(infile_path.c_str(),O_RDONLY);
+			if(fd_in < 0){
+				cout << "Error: failed to open input file: " << command->infile;
+			}else{
+				dup2(fd_in,0);
+			}
+		}
+
 		//TODO put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());

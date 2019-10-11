@@ -15,7 +15,7 @@ using namespace std;
 static void pad_symbols(string *str){
 	size_t symbol_position = 0;
 	while(symbol_position <= str->length()){
-		symbol_position = str->find_first_of("|;>", symbol_position);
+		symbol_position = str->find_first_of("|;><", symbol_position);
 		if(symbol_position != string::npos){
 			str->insert(symbol_position + 1, " ");
 			str->insert(symbol_position++, " ");
@@ -63,6 +63,8 @@ int Parser::parse(string *str){
 				}else{
 					new_command->outfile = token_next;
 				}
+			}else if(token.compare("<")==0){
+				str_stream >> new_command->infile;
 			}else{
 				new_command-> args.push_back(token);
 			}
