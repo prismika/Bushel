@@ -27,7 +27,7 @@ string txtreg = "\e[0;37m";
 /*Main method. Bootstrap for the entire shell.*/
 int main(int argc, char *argv[]){
 	//Setup
-	//put in environment: "shell","path/to/shell/bushel"
+	//TODO put in environment: "shell","path/to/shell/bushel"
 	//Check for file specified in argument
 	if(argc==2){
 		ifstream batch_file(argv[1]);
@@ -161,14 +161,48 @@ int execute(const Command *command){
 /*Checks if command needs special execution procedure and executes it.
 Returns 0 if command was executed. Returns -1 otherwise.*/
 int execute_special(const Command *command){
-	/*string command_name = command->name();
-	if(command_name.compare("cd")){
-		...
-	}...*/
 	if(!command->name.compare("quit") || !command->name.compare("exit")){
 		exit(0);
 	}else if(!command->name.compare("cd")){
-		cout << "I can't change directories yet :(" << endl;
+		string new_path;
+		if(command->args.size()==0){
+			cout << getenv("PWD") << endl;
+			return 0;
+		}
+		if(!command->args[0].compare(".")){
+			return 0;
+		}else if(!command->args[0].compare("..")){
+			//'cd ..' Move to parent directory
+			//Delete everything after last '/' in the present working directory
+			new_path = getenv("PWD");
+			size_t slash_pos = new_path.find_last_of("/");
+			if(slash_pos==0|| slash_pos==string::npos){
+				cout << "Error: No parent directory" << endl;
+			}
+			new_path = new_path.substr(0,slash_pos);
+		}else if(command->args[0][0] == '/'){
+			//Interpret argument an absolute file path
+			new_path = command->args[0];
+		}else{
+			//relative file path
+			new_path = getenv("PWD");
+			new_path += "/";
+			new_path += command->args[0];
+		}
+		//Change directory
+		if(chdir(new_path.c_str())<0){
+			cout << "Error: Failed to change directory" << endl;
+			return 0;
+		}
+		//Update environment
+		char buffer[1024];
+		getcwd(buffer,1024);
+		string to_put_in_env(buffer);
+		to_put_in_env = "PWD=" + to_put_in_env;
+		// new_path = "PWD="+new_path;
+		char *to_put_in_env_char = (char*)malloc(to_put_in_env.length()+1);
+		strcpy(to_put_in_env_char, to_put_in_env.c_str());
+		putenv(to_put_in_env_char);
 		return 0;
 	}
 	return -1;
