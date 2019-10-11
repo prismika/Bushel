@@ -87,14 +87,22 @@ int execute(const Command *command){
 	if(child_pid == 0){//child
 		//Set up output file if specified
 		int fd_out;
-		if(!command->outfile.empty()){
+		if(!command->outfile.empty()){//If an outfile is specified, try opening it.
 			string outfile_path = getenv("PWD");
 			outfile_path += "/";
 			outfile_path += command->outfile;
-			fd_out = open(outfile_path.c_str(),O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR|S_IWUSR);
+			//Set write flags.
+			//					Write only 		Create file if necessary
+			int write_flags = 	O_WRONLY	|	O_CREAT;
+			if(command->append){
+				write_flags = write_flags | O_APPEND;
+			}else{
+				write_flags = write_flags | O_TRUNC;
+			}
+			fd_out = open(outfile_path.c_str(),write_flags,S_IRUSR|S_IWUSR);
 			if(fd_out < 0){
 				cout << "Error: failed to open output file: " << command->outfile;
-			}else{
+			}else{//If successful, replace stdout with the new file descriptor
 				dup2(fd_out, 1);
 			}
 		}

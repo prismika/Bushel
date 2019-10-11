@@ -12,8 +12,6 @@ executable to interpret.
 
 using namespace std;
 
-// static string get_next_token(string *str, size_t *progress);
-
 static void pad_symbols(string *str){
 	size_t symbol_position = 0;
 	while(symbol_position <= str->length()){
@@ -37,6 +35,7 @@ int Parser::parse(string *str){
 		new_command->pipe = false;
 		new_command->infile = "";
 		new_command->outfile = "";
+		new_command->append = false;
 		str_stream >> new_command->name;
 		while(true){
 			string token;
@@ -56,7 +55,14 @@ int Parser::parse(string *str){
 				another_command_in_string = true;
 				break;
 			}else if(token.compare(">")==0){
-				str_stream >> new_command->outfile;
+				string token_next;
+				str_stream >> token_next;
+				if(!token_next.compare(">")){//Appending
+					new_command->append = true;
+					str_stream >> new_command->outfile;
+				}else{
+					new_command->outfile = token_next;
+				}
 			}else{
 				new_command-> args.push_back(token);
 			}
@@ -74,30 +80,6 @@ int Parser::parse_file(ifstream *file_stream){
 	}
 	return 0;
 }
-
-// static string get_next_token(string *str, size_t *progress){
-// 	//If we've progressed to the end of the string, we're done.
-// 	if(str->length() <= *progress) return "";
-// 	string return_string;
-// 	//Find the next space
-// 	size_t pos = str->find_first_of(" ", *progress);
-// 	//If there are no more spaces, just return to the end of the string.
-// 	if(pos == string::npos){
-// 		return_string = str->substr(*progress);
-// 		//Increment the progress
-// 		*progress = str->length();
-// 		return return_string;
-// 	}
-// 	//
-// 	pos = str->find_first_not_of(" ", pos);
-// 	if(pos == string::npos){
-// 		return_string = str->substr(*progress);
-// 	}else{
-// 		return_string = str->substr(*progress, pos - *progress);
-// 	}
-// 	*progress += return_string.length()+1;
-// 	return return_string;
-// }
 
 bool Parser::has_next_command(void){
 	return !q.empty();

@@ -15,6 +15,7 @@ typedef struct{
 	vector<string> args;
 	string infile;
 	string outfile;
+	bool append;
 }Command;
 
 class Parser{
