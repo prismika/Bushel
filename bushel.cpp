@@ -10,6 +10,7 @@ Brantley Vose
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <fcntl.h>
 #include "parser.h"
 
 using namespace std;
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]){
 	if(argc==2){
 		ifstream batch_file(argv[1]);
 		if(batch_file.fail()){
-			cout << "Error: File not found: " << argv[1] << endl;
+			cout << "Error: Failed to open batch file: " << argv[1] << endl;
 			return -1;
 		}
 		parser.parse_file(&batch_file);
@@ -59,7 +60,6 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-int fd_pipe_from_child[2];
 int execute(const Command *command){
 	//Execute any "special" commands
 	if(!execute_special(command)){
@@ -67,6 +67,7 @@ int execute(const Command *command){
 	}
 
 	//Do necessary plumbing
+	int fd_pipe_from_child[2];
 	pid_t more_pid;
 	if(command->pipe){
 		pipe(fd_pipe_from_child);
@@ -84,6 +85,19 @@ int execute(const Command *command){
 	//Create child that will execute command
 	pid_t child_pid = fork();
 	if(child_pid == 0){//child
+		//Set up output file if specified
+		int fd_out;
+		if(!command->outfile.empty()){
+			string outfile_path = getenv("PWD");
+			outfile_path += "/";
+			outfile_path += command->outfile;
+			fd_out = open(outfile_path.c_str(),O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR|S_IWUSR);
+			if(fd_out < 0){
+				cout << "Error: failed to open output file: " << command->outfile;
+			}else{
+				dup2(fd_out, 1);
+			}
+		}
 		//put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());

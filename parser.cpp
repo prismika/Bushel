@@ -17,7 +17,7 @@ using namespace std;
 static void pad_symbols(string *str){
 	size_t symbol_position = 0;
 	while(symbol_position <= str->length()){
-		symbol_position = str->find_first_of("|;", symbol_position);
+		symbol_position = str->find_first_of("|;>", symbol_position);
 		if(symbol_position != string::npos){
 			str->insert(symbol_position + 1, " ");
 			str->insert(symbol_position++, " ");
@@ -52,10 +52,11 @@ int Parser::parse(string *str){
 					cout << "Error: Unrecognized pipe listener" << endl;
 				}
 				continue;
-			}
-			if(token.compare(";")==0){
+			}else if(token.compare(";")==0){
 				another_command_in_string = true;
 				break;
+			}else if(token.compare(">")==0){
+				str_stream >> new_command->outfile;
 			}else{
 				new_command-> args.push_back(token);
 			}
