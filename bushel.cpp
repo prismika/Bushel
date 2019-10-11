@@ -17,6 +17,9 @@ using namespace std;
 
 int execute(const Command*);
 int execute_special(const Command*);
+int execute_special_in_child(const Command *command);
+int apply_alias(Command *command);
+
 
 string pwd = "";
 Parser parser;
@@ -53,6 +56,7 @@ int main(int argc, char *argv[]){
 			while(parser.has_next_command()){
 				Command *current_command;
 				current_command = parser.next_command();
+				apply_alias(current_command);
 				execute(current_command);
 			}
 		}
@@ -60,7 +64,18 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
+/*Handles hardcoded aliases*/
+int apply_alias(Command *command){
+	if(!command->name.compare("clr")){
+		command->name = "clear";
+	}else if(!command->name.compare("environ")){
+		command->name = "env";
+	}
+	return 0;
+}
+
 int execute(const Command *command){
+
 	//Execute any "special" commands
 	if(!execute_special(command)){
 		return 0;
@@ -121,7 +136,14 @@ int execute(const Command *command){
 			}
 		}
 
+		if(command->pipe){
+			//Replace stdout of child with write end of pipe
+			dup2(fd_pipe_from_child[1],1);
+			close(fd_pipe_from_child[0]);
+		}
+
 		//TODO put in environment parent
+		//Process command name and arguments into array
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());
 		char *exec_args[command->args.size()+2];
@@ -132,11 +154,6 @@ int execute(const Command *command){
 			strcpy(exec_args[i],command->args[i-1].c_str());
 		}
 		exec_args[i]=NULL;
-		if(command->pipe){
-			//Replace stdout of child with write end of pipe
-			dup2(fd_pipe_from_child[1],1);
-			close(fd_pipe_from_child[0]);
-		}
 		// cout << execvpc_args[0] << endl;
 		execvp(exec_args[0],exec_args);
 		cout << "Command not found: " << exec_args[0] << endl;
@@ -206,4 +223,9 @@ int execute_special(const Command *command){
 		return 0;
 	}
 	return -1;
+}
+
+/*Same as execute_special, but these commands run in the child process.*/
+int execute_special_in_child(const Command *command){
+	return 0;
 }
