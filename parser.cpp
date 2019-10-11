@@ -66,7 +66,6 @@ int Parser::parse(string *str){
 }
 
 int Parser::parse_file(ifstream *file_stream){
-	cout << "Parsing file..." << endl;
 	while(!file_stream->eof()){
 		string cur_line;
 		getline(*file_stream, cur_line);

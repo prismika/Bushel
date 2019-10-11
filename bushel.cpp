@@ -29,13 +29,11 @@ int main(int argc, char *argv[]){
 	//put in environment: "shell","path/to/shell/bushel"
 	//Check for file specified in argument
 	if(argc==2){
-		cout << "Two arguments" << endl;
 		ifstream batch_file(argv[1]);
 		if(batch_file.fail()){
 			cout << "Error: File not found: " << argv[1] << endl;
 			return -1;
 		}
-		cout << "Executing from batch file: " << argv[1] << endl;
 		parser.parse_file(&batch_file);
 		while(parser.has_next_command()){
 			Command *current_command;
