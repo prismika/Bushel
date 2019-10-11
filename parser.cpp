@@ -8,39 +8,53 @@ using namespace std;
 // static string get_next_token(string *str, size_t *progress);
 
 void pad_symbols(string *str){
-	size_t pipe_position = str->find_first_of("|");
-	if(pipe_position != string::npos){
-		str->insert(pipe_position, " ");
-		str->insert(pipe_position+1, " ");
+	size_t symbol_position = 0;
+	while(symbol_position <= str->length()){
+		symbol_position = str->find_first_of("|;", symbol_position);
+		if(symbol_position != string::npos){
+			str->insert(symbol_position + 1, " ");
+			str->insert(symbol_position++, " ");
+			symbol_position++;
+		}
 	}
 }
 
 int Parser::parse(string *str){
-	Command *new_command = new Command();
-	new_command->background = false;
-	new_command->pipe = false;
-	new_command->infile = "";
-	new_command->outfile = "";
 	pad_symbols(str);
 	stringstream str_stream(*str);
-	str_stream >> new_command->name;
-	while(true){
-		string token;
-		str_stream >> token;
-		if(token.empty()) break;
-		if(token.compare("|")==0){
-			string token_pipe_to;
-			str_stream >> token_pipe_to;
-			if(!token_pipe_to.compare("more")){
-				new_command->pipe = true;
-			}else{
-				cout << "Error: Unrecognized pipe listener" << endl;
+	bool another_command_in_string = true;
+	while(another_command_in_string){
+		another_command_in_string = false;
+		Command *new_command = new Command();
+		new_command->background = false;
+		new_command->pipe = false;
+		new_command->infile = "";
+		new_command->outfile = "";
+		str_stream >> new_command->name;
+		while(true){
+			string token;
+			str_stream >> token;
+			if(token.empty()) break;
+			//Handle pipe symbol
+			if(token.compare("|")==0){
+				string token_pipe_to;
+				str_stream >> token_pipe_to;
+				if(!token_pipe_to.compare("more")){
+					new_command->pipe = true;
+				}else{
+					cout << "Error: Unrecognized pipe listener" << endl;
+				}
+				continue;
 			}
-			continue;
+			if(token.compare(";")==0){
+				another_command_in_string = true;
+				break;
+			}else{
+				new_command-> args.push_back(token);
+			}
 		}
-		new_command-> args.push_back(token);
+		q.push(new_command);
 	}
-	q.push(new_command);
 	return 0;
 }
 
