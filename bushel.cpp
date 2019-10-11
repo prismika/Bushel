@@ -104,9 +104,10 @@ int execute(const Command *command){
 				cout << "Error: failed to open output file: " << command->outfile;
 			}else{//If successful, replace stdout with the new file descriptor
 				dup2(fd_out, 1);
+				dup2(fd_out, 2);
 			}
 		}
-		//put in environment parent
+		//TODO put in environment parent
 		char *exec_name = (char*)malloc(command->name.length()+1);
 		strcpy(exec_name,command->name.c_str());
 		char *exec_args[command->args.size()+2];
