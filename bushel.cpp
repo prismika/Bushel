@@ -17,17 +17,18 @@ using namespace std;
 
 int execute(const Command*);
 int execute_special(const Command*);
-int execute_special_in_child(const Command *command);
 int apply_alias(Command *command);
 
 
 string pwd = "";
+//Parser object. Parses user input into command structs and holds them in a queue
 Parser parser;
 string txtblue = "\e[01;34m";
 string txtgreen = "\e[01;32m";
 string txtreg = "\e[0;37m";
 
-/*Main method. Bootstrap for the entire shell.*/
+/*Main method. Bootstrap for the entire shell.
+Returns -1 if provided batch file fails to open*/
 int main(int argc, char *argv[]){
 	//Setup
 	//TODO put in environment: "shell","path/to/shell/bushel"
@@ -64,7 +65,8 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-/*Handles hardcoded aliases*/
+/*Handles hardcoded aliases by changing the provided command
+returns 0*/
 int apply_alias(Command *command){
 	if(!command->name.compare("clr")){
 		command->name = "clear";
@@ -74,6 +76,9 @@ int apply_alias(Command *command){
 	return 0;
 }
 
+/*Execute given command object.
+Returns 0
+*/
 int execute(const Command *command){
 
 	//Execute any "special" commands
@@ -246,9 +251,4 @@ int execute_special(const Command *command){
 		cout << help_message << endl;
 	}
 	return -1;
-}
-
-/*Same as execute_special, but these commands run in the child process.*/
-int execute_special_in_child(const Command *command){
-	return 0;
 }

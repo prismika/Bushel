@@ -8,7 +8,7 @@ CFLAGS = -Wall -ggdb3
 CPPFLAGS = -Wall -ggdb3
 
 BIN = bushel
-OBJS = parser.o filemanager.o
+OBJS = parser.o
 
 all: $(BIN)
 
