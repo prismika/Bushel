@@ -8,10 +8,10 @@ Also no.
 
 # Compilation Instructions
 Simply type 'make'. If you have make installed, you're done!
-If that was so fun you want to do it again, type 'make clean' and then 'make' again. Wheee!
+If that was so fun you want to do it again, type 'make clean' and then 'make' again. Go to town!
 
 # Known Bugs
-1) The 'pause' command should suspend the shell, but instead it does nothing at all because I coudn't figure that one out. Sorry :(
-2) Segfaults if given a picture of a dog with a saddle and a baby riding it.
-3) Output is sometimes converted to powerpoint before displaying.
+1) The 'pause' command should suspend the shell, but instead it does nothing at all.
+2) Output is sometimes converted to powerpoint before displaying.
+3) Belittles you for unnecessary use of blockchain.
 4) Emits radiation when compiled on TempleOS.
