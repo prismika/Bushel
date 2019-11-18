@@ -1,7 +1,8 @@
 # Bushel
 Bushel, the Barely Usable SHELl
 Bushel is a Linux shell with minimal support for anything useful.
-Is this a perfect shell? No. Does it havev tab completion? No. Command history? No.
+Is this a perfect shell? No. Does it have tab completion? No. Command history? No.
+
 But is this a bug-free, dependable shell that will get the job done and always have your back?
 Also no.
 
